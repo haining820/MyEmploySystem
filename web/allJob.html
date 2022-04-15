@@ -1,0 +1,384 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>职位分类管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <script src="./static/js/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+
+<body style="padding: 10px;">
+
+<!--引用区块,表格上方标的题-->
+<blockquote class="layui-elem-quote">具体职位管理</blockquote>
+
+<!--添加职位弹出层-->
+<div id="add-job-layer" style="display: none; padding: 20px 50px">
+    <form id="add-job-form" class="layui-form layui-form-pane">
+        <br>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属分类</label>
+            <div class="layui-input-block">
+                <select name="jobtypeId" id="addJobtypeId" lay-verify="required" style="width: 330px;">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <div class="layui-form-item">
+            <label class="layui-form-label">职位名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="jobName" class="layui-input" lay-verify="required" style="width: 340px;"
+                       autocomplete="off">
+            </div>
+        </div>
+        <br>
+        <br>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="add-form-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="add-exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--编辑职位弹出层-->
+<div id="update-job-layer" style="display: none; padding: 20px 50px">
+    <form id="update-job-form" class="layui-form layui-form-pane" lay-filter="update-job-form">
+        <br>
+        <div class="layui-form-item">
+            <label class="layui-form-label">职位ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="jobId" class="layui-input" lay-verify="required" style="width: 340px;"
+                       autocomplete="off">
+            </div>
+        </div>
+        <br>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属分类</label>
+            <div class="layui-input-block">
+                <select name="jobtypeId" id="updateJobtypeId" lay-verify="required" style="width: 330px;">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <div class="layui-form-item">
+            <label class="layui-form-label">职位名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="jobName" class="layui-input" lay-verify="required" style="width: 340px;"
+                       autocomplete="off">
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="update-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="update-exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<!--工具栏-->
+<script type="text/html" id="toolbarDemo">
+    <div class="searchTable">
+        <div class="layui-inline">
+            <input id="inputJobName" name="inputJobName" class="layui-input"
+                   placeholder="请输入职位名称" style="height: 32px;" autocomplete="off">
+        </div>
+
+        <button id="searchJob" type="button" class="layui-btn layui-btn-primary layui-border-green layui-btn-sm"
+                data-type="reload" style="height: 32px;">
+            <i class="layui-icon">&#xe615;</i> 搜 索
+        </button>
+
+        &nbsp;&nbsp;&nbsp;
+        <div class="layui-inline">
+            <button id="refresh" type="button" class="layui-btn layui-btn-sm" data-type="reload" style="height: 32px;">
+                <i class="layui-icon">&#xe669;</i> 显示全部
+            </button>
+            <button id="add-job-btn" class="layui-btn layui-btn-sm" style="height: 32px;">添加新的职位</button>
+        </div>
+
+    </div>
+
+</script>
+
+<!--职位列表-->
+<table class="layui-hide" id="allJobTable" lay-filter="allJobTable"></table>
+<!--列表后面的删除和编辑按钮-->
+<script type="text/html" id="barCom">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+
+    layui.use(['form', 'upload', 'layer'], function () {
+        var $ = layui.$;
+        $.ajax({
+            url: '/admin/queryAllJobtype',
+            dataType: 'json',
+            type: 'get',
+            success: function (data) {
+                console.log("后台数据:")
+                console.log(data);//下面会提到这个data是什么值
+                //使用循环遍历，给下拉列表赋值
+                $.each(data.data, function (index, value) {
+                    // console.log(value.jobtypeName);
+                    // console.log(value.jobtypeId);
+                    $('#addJobtypeId').append(new Option(value.jobtypeName, value.jobtypeId));// 下拉菜单里添加元素
+                });
+                layui.form.render("select");//重新渲染 固定写法
+            }
+        })
+    });
+
+    layui.use('table', function () {
+        var table = layui.table;
+        var $ = layui.$;
+        table.render({
+            elem: '#allJobTable'
+            , height: 'full-80'
+            , url: 'http://localhost:8080/admin/queryJobByLimit'
+            , method: 'post'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter']
+            , cols: [[
+                {field: 'jobId', width: 200, title: '职位ID', sort: true}
+                , {field: 'jobtypeId', width: 250, title: '分类名称'}
+                , {field: 'jobName', width: 250, title: '职位名称'}
+                , {field: 'jobCreateTime', width: 250, title: '创建时间'}
+                , {width: 120, title: '操作', toolbar: '#barCom'}
+            ]]
+            , page: true
+        });
+
+        //搜索功能
+        active = {
+            reload: function () {
+                var inJobName = $('#inputJobName');
+                //执行重载
+                table.reload('allJobTable', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        jobName: inJobName.val()
+                    }
+                });
+            }
+        };
+
+        $('body').on('click', '.searchTable .layui-btn', function () {
+            // $('.searchTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        //显示全部用户
+        $('body').on('click', '#refresh', function () {
+            table.reload('allJobTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    jobtypeName: ""
+                }
+            });
+        });
+
+        //显示添加弹出层
+        $('body').on('click', '#add-job-btn', function () {
+            // 每次显示前重置表单
+            $('#add-job-form')[0].reset();
+            layer.open({
+                type: 1,
+                title: '添加职位',
+                skin: 'layui-layer-molv',
+                area: ['550px,550'],
+                content: $('#add-job-layer')
+            });
+        })
+
+        //添加用户表单提交
+        layui.form.on('submit(add-form-submit)', function (data) {
+            // ajax方式添加用户
+            $.ajax({
+                url: "/admin/addJob",
+                type: "POST",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        layer.close(layer.index);
+                        layer.msg('添加成功！', {icon: 1, time: 1000, shift: 1}, function () {
+                            table.reload('allJobTable');
+                        });
+                    } else {
+                        layer.msg('添加失败！');
+                    }
+                },
+                error: function () {
+                    console.log("ajax error！");
+                }
+            });
+            // 阻止表单跳转
+            return false;
+        });
+
+        // 退出
+        $('body').on('click', '#add-exit', function () {
+            layer.close(layer.index);
+        })
+
+        // 退出
+        $('body').on('click', '#update-exit', function () {
+            layer.close(layer.index);
+        })
+
+        //监听行工具事件
+        table.on('tool(allJobTable)', function (obj) {
+            var data = obj.data;
+            var $ = layui.$;
+            console.log(obj);
+            //删除事件
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该职位吗?', function (index) {
+                    //向服务端发送删除指令
+                    console.log("data.jobId=" + data.jobId);
+                    $.ajax({
+                        url: "admin/deleteJobById/" + data.jobId
+                        , type: 'DELETE'
+                        , contentType: "application/json; charset=utf-8"
+                        , dataType: 'json'
+                        , success: function (data) {
+                            if (data.status == 1) {
+                                layer.msg('删除成功！', {icon: 1, time: 1000, shift: 1}, function () {
+                                    location.reload();
+                                });
+                                table.reload('allJobTable');
+                            } else {
+                                layer.msg('删除失败！');
+                            }
+                        },
+                        error: function (data) {
+                            console.log("ajax error！");
+                            layer.msg('ajax error！');
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+
+            // 更新用户事件
+            if (obj.event === 'edit') {
+                console.log("data中jobId:" + data.jobId);
+                console.log("data中jobtypeId:" + data.jobtypeId);
+                console.log("data中jobName:" + data.jobName);
+                var currJobtypeId = data.jobtypeId;
+                // $("#updateJobtypeId").append("<option value='" + data.jobtypeId + "' selected>" + data.jobtypeId + "</option>");
+                // 每次显示更新用户的表单前自动为表单填写该行的数据
+                layui.form.val('update-job-form', {
+                    "jobId": data.jobId,
+                    // "jobtypeId": data.jobtypeId,
+                    "jobName": data.jobName
+                });
+
+                // 填充下拉框
+                layui.use(['form', 'upload', 'layer'], function () {
+                    var $ = layui.$;
+                    $.ajax({
+                        url: '/admin/queryAllJobtype',
+                        dataType: 'json',
+                        type: 'get',
+                        success: function (data) {
+                            console.log("后台数据:")
+                            console.log(data);//下面会提到这个data是什么值
+                            //使用循环遍历，给下拉列表赋值
+                            $.each(data.data, function (index, value) {
+                                // console.log(value.jobtypeName);
+                                // console.log(value.jobtypeId);
+
+                                if (value.jobtypeName === currJobtypeId) {
+                                    console.log("currJobtypeId: "+currJobtypeId);
+                                    console.log("value.jobtypeName: "+value.jobtypeName);
+                                    $('#updateJobtypeId').append(new Option(value.jobtypeName, value.jobtypeId, false, true));  // 下拉菜单里添加元素
+                                } else {
+                                    $('#updateJobtypeId').append(new Option(value.jobtypeName, value.jobtypeId));  // 下拉菜单里添加元素
+                                }
+                            });
+                            layui.form.render("select");//重新渲染 固定写法
+                        }
+                    })
+                });
+
+
+                // $('#addJobtypeId').append(new Option(data.jobtypeName,data.jobtypeId));
+
+                // 显示更新用户表单的弹出层
+                layer.open({
+                    type: 1,
+                    title: '更新职位信息',
+                    skin: 'layui-layer-molv',
+                    area: ['550px,550px'],
+                    content: $('#update-job-layer'),
+                    cancel: function(){
+                        $("#updateJobtypeId").empty();
+                        layui.form.render("select");
+                        layer.close(layer.index);
+                    }
+                });
+                // 更新用户表单提交
+                layui.form.on('submit(update-submit)', function (data) {
+                    // ajax方式更新用户
+                    $.ajax({
+                        url: "/admin/updateJob",
+                        type: "PUT",
+                        data: JSON.stringify(data.field),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                layer.close(layer.index);
+                                layer.msg('更新成功！', {icon: 1, time: 1000, shift: 1}, function () {
+                                    table.reload('allJobTable');
+                                });
+                            } else {
+                                layer.msg('更新失败');
+                            }
+                        },
+                        error: function () {
+                            console.log("ajax error");
+                        }
+                    });
+                    // 阻止表单跳转
+                    return false;
+                });
+            }
+
+        });
+
+
+    });
+</script>
+
+</body>
+</html>

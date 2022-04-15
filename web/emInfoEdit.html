@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>普通用户信息编辑</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="static/js/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>普通用户信息</legend>
+</fieldset>
+
+<!--用户信息表单显示-->
+<form class="layui-form layui-form-pane" style="padding:10px 30px" lay-filter="showEmInfo">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="emAccountNum" class="layui-input" style="width:280px;" readonly>
+            </div>
+        </div>
+        <div class="layui-inline" style="padding-left: 90px">
+            <label class="layui-form-label" style="">密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="emPwd" class="layui-input" style="width:280px;" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">昵称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emUsername" class="layui-input" style="width:692px" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="emName" class="layui-input" style="width:280px;" readonly>
+            </div>
+        </div>
+        <div class="layui-inline" style="padding-left: 90px">
+            <label class="layui-form-label" style="">性别</label>
+            <div class="layui-input-inline">
+                <input type="text" name="emSex" class="layui-input" style="width:280px;" readonly>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">生日</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emBirth" class="layui-input" style="width:692px" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">就读院校</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emSchool" class="layui-input" style="width:692px" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label" style="width:800px">自我介绍</label>
+        <div class="layui-input-block">
+            <textarea placeholder="请输入内容" name="emIntro" class="layui-textarea" style="width:800px; height:120px"
+                      readonly></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emEmail" class="layui-input" style="width:692px" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">联系电话</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emTel" class="layui-input" style="width:692px" readonly>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">毕业时间</label>
+        <div class="layui-input-inline">
+            <input type="text" name="emGraduateTime" class="layui-input" style="width:692px" readonly>
+        </div>
+    </div>
+
+</form>
+
+<div style="padding:10px 30px;">
+    <button id="editEm" type="button" class="layui-btn layui-btn-normal">编辑</button>
+    <!--    <button id="fileUpload" type="button" class="layui-btn layui-btn-normal">简历上传</button>-->
+    <button type="button" class="layui-btn" id="fileUpload"><i class="layui-icon"></i>上传简历文件</button>
+    <button type="button" class="layui-btn" id="fileDownload"><i class="layui-icon"></i>下载简历文件</button>
+</div>
+
+
+<div class="layui-btn-container">
+
+</div>
+
+<!--更新用户弹出层, padding: 20px 50px, 上下20,左右50-->
+<div id="update-em-layer" style="display: none; padding: 20px 50px">
+    <form id="update-em-form" class="layui-form layui-form-pane" lay-filter="update-em-form">
+        <!--emId,emAccountName,emPwd默认不显示-->
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">emId</label>
+            <div class="layui-input-inline">
+                <input type="text" name="emId" readonly>
+            </div>
+        </div>
+        <div class="layui-form-item" style="display: none">
+            <div class="layui-inline">
+                <label class="layui-form-label">账号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emAccountNum" readonly>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input type="password" name="emPwd" readonly>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="emUsername" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emName" class="layui-input" lay-verify="required" autocomplete="off"
+                           style="width:280px;">
+                </div>
+            </div>
+            <div class="layui-inline" style="padding-left: 90px">
+                <label class="layui-form-label" style="">性别</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emSex" class="layui-input" lay-verify="required" autocomplete="off"
+                           style="width:260px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">生日</label>
+            <div class="layui-input-block">
+                <input type="text" name="emBirth" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">就读院校</label>
+            <div class="layui-input-block">
+                <input type="text" name="emSchool" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="width:780px">自我介绍</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" name="emIntro" class="layui-textarea"
+                          style="width:780px; height:120px"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="emEmail" class="layui-input" lay-verify="email" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="emTel" class="layui-input" lay-verify="number" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">毕业时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="emGraduateTime" class="layui-input" lay-verify="date"
+                       placeholder="请按正确格式（年-月）输入，如：2021-9" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <br>
+                <button class="layui-btn" lay-submit lay-filter="update-em-form-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script src="static/js/layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+<script>
+    /**********************************************************************************************************************/
+    // 导航栏函数,页面公用部分
+    var $ = layui.$;
+    var loginUsername;
+    var loginUserType;
+    var loginId;
+    var fileStatus;
+    // 初始化
+    $(function () {
+        $.post("/user/getCurrUserType", function (obj) {
+            loginUserType = obj;
+            console.log(loginUserType);
+        }, "text")
+        $.post("/user/getCurrUsername", function (obj) {
+            loginUsername = obj;
+            console.log(loginUsername);
+        }, "text")
+        $.post("/user/getCurrLoginId", function (obj) {
+            loginId = obj;
+            console.log(loginId);
+        }, "text")
+        $.post("/user/getFileStatus", function (obj) {
+            fileStatus = obj;
+            console.log(fileStatus);
+            if (fileStatus == 1) {
+                $("#fileUpload").addClass("layui-btn-disabled").attr("disabled",true);
+                $("#fileUpload").text("简历文件已上传");
+            }
+        }, "text")
+    });
+
+    /**********************************************************************************************************************/
+
+    // 编辑求职者信息的表单操作
+    layui.use('form', function () {
+        var form = layui.form;
+        var $ = layui.$;
+        var data;
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:8080/user/showEmInfo',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            success: function (obj) {
+                data = obj.data;
+                console.log("=================================================");
+                console.log(data);
+                form.val("showEmInfo", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                    "emAccountNum": data.emAccountNum
+                    , "emPwd": "data.emPwd"
+                    , "emUsername": data.emUsername
+                    , "emName": data.emName
+                    , "emSex": data.emSex
+                    , "emBirth": data.emBirth
+                    , "emSchool": data.emSchool
+                    , "emIntro": data.emIntro
+                    , "emEmail": data.emEmail
+                    , "emTel": data.emTel
+                    , "emGraduateTime": data.emGraduateTime
+                });
+
+            }
+        })
+
+        $('body').on('click', '#editEm', function () {
+            console.log(data);
+            // 更新用户事件
+            // 每次显示更新用户的表单前自动为表单填写该行的数据
+            form.val('update-em-form', {
+                "emId": data.emId
+                , "emAccountNum": data.emAccountNum
+                , "emPwd": data.emPwd
+                , "emUsername": data.emUsername
+                , "emName": data.emName
+                , "emSex": data.emSex
+                , "emBirth": data.emBirth
+                , "emSchool": data.emSchool
+                , "emIntro": data.emIntro
+                , "emEmail": data.emEmail
+                , "emTel": data.emTel
+                , "emGraduateTime": data.emGraduateTime
+            });
+            // 显示更新用户表单的弹出层
+            layer.open({
+                type: 1,
+                title: '更新用户信息',
+                skin: 'layui-layer-molv',
+                area: ['900px', '600px'],
+                content: $('#update-em-layer')
+            });
+
+            // 更新用户表单提交
+            form.on('submit(update-em-form-submit)', function (data) {
+                // ajax方式更新用户
+                $.ajax({
+                    url: "/edit/updateEm",
+                    type: "PUT",
+                    data: JSON.stringify(data.field),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == 1) {
+                            layer.close(layer.index);
+                            layer.msg('更新成功!', {icon: 1, time: 1000, shift: 1}, function () {
+                                location.reload();
+                            });
+                        } else {
+                            layer.msg('更新失败!');
+                        }
+                    },
+                    error: function () {
+                        console.log("ajax error");
+                    }
+                });
+                // 阻止表单跳转
+                return false;
+            });
+
+            $('body').on('click', '#exit', function () {
+                layer.close(layer.index);
+            })
+
+        });
+    });
+
+    layui.upload.render({
+        elem: '#fileUpload'
+        , url: '/user/fileUpload' //改成您自己的上传接口
+        , accept: 'file' //普通文件
+        , done: function (res) {
+            console.log(res);
+            console.log(res.code);
+            if (res.code == 1) {
+                layer.msg('上传成功!', {icon: 6, time: 2000, shift: 3});
+                location.reload();
+            }
+        }
+    });
+
+    $('body').on('click', '#fileDownload', function () {
+        window.location.href = '/user/fileDownload/'+loginId+'/'+0;
+    })
+
+
+
+</script>
+
+</body>
+</html>

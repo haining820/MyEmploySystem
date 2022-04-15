@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haining820.dao.JobMapper">
+
+    <select id="queryJobByLimit" resultType="Job" parameterType="java.util.Map">
+        select * from employsys.job
+        <where>
+            <if test="jobName!=null">
+                jobName=#{jobName}
+            </if>
+        </where>
+        <if test="startIndex!=null">
+            <if test="pageSize!=null">
+                limit #{startIndex},#{pageSize}
+            </if>
+        </if>
+    </select>
+
+    <select id="countJobNum" resultType="int" parameterType="java.util.Map">
+        select count(*) from employsys.job
+        <if test="jobtypeName!=null">
+            where jobName=#{jobName}
+        </if>
+    </select>
+
+
+</mapper>

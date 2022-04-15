@@ -1,0 +1,83 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>职位分类管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <script src="./static/js/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+
+<body style="padding: 10px;">
+
+<!--引用区块,表格上方标的题-->
+<blockquote class="layui-elem-quote">招聘管理</blockquote>
+
+
+<!--工具栏-->
+<script type="text/html" id="toolbarDemo">
+    <div class="searchTable">
+        <div class="layui-inline">
+            <input id="inputJobName" name="inputJobName" class="layui-input"
+                   placeholder="请输入具体职位名称" style="height: 32px;" autocomplete="off">
+        </div>
+
+        <button id="searchComjob" type="button" class="layui-btn layui-btn-primary layui-border-green layui-btn-sm"
+                data-type="reload" style="height: 32px;">
+            <i class="layui-icon">&#xe615;</i> 搜 索
+        </button>
+
+        &nbsp;&nbsp;&nbsp;
+        <div class="layui-inline">
+            <button id="refresh" type="button" class="layui-btn layui-btn-sm" data-type="reload" style="height: 32px;">
+                <i class="layui-icon">&#xe669;</i> 显示全部
+            </button>
+            <button id="add-comjob-btn" class="layui-btn layui-btn-sm" style="height: 32px;">添加新的职位</button>
+        </div>
+
+    </div>
+
+</script>
+
+<!--职位列表-->
+<table class="layui-hide" id="allComjobTable" lay-filter="allComjobTable"></table>
+<!--列表后面的删除和编辑按钮-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+
+    layui.use('table', function () {
+        layui.table.render({
+            elem: '#allComjobTable'
+            , height: 'full-80'
+            , url: '/admin/queryComjobByLimit'
+            , method: 'post'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter']
+            , cols: [[
+                {field: 'comjobId', width: 100, title: '招聘ID', sort: true}
+                , {field: 'jobId', width: 150, title: '职位名称'}
+                , {field: 'comId', width: 150, title: '公司名称'}
+                , {field: 'comjobIntro', width: 250, title: '职位介绍'}
+                , {field: 'salary', width: 150, title: '薪资'}
+                , {field: 'workTime', width: 150, title: '工作时间'}
+                , {field: 'hireMaxNum', width: 120, title: '需求数量'}
+                , {field: 'hiredNum', width: 120, title: '已雇佣数量'}
+                , {field: 'comjobCreateTime', width: 200, title: '创建时间'}
+                , {fixed: 'right', width: 120, title: '操作', toolbar: '#barDemo'}
+            ]]
+            , page: true
+        });
+
+
+    });
+</script>
+
+</body>
+</html>

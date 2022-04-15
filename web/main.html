@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>网站首页</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <script src="./static/js/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<!--*******************************************************************************************************-->
+<ul class="layui-nav">
+    <li class="layui-nav-item">
+        <a href="javascript:;" onclick="returnMain()">网站首页</a>
+    </li>
+    <li class="layui-nav-item">
+        <a href="javascript:;" onclick="">职位搜索</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="pwdEdit()">修改密码</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="logout()">退出登录</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="infoEdit()">个人信息管理</a>
+    </li>
+
+    <!--    <li class="layui-nav-item" lay-unselect=""  style="float:right">
+            <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img">我</a>
+            <dl class="layui-nav-child">
+                <dd><a href="javascript:;" onclick="comInfoEdit()">信息管理</a></dd>
+                <dd><a href="javascript:;">安全管理</a></dd>
+                <dd><a href="javascript:;">退了</a></dd>
+            </dl>
+        </li>-->
+
+</ul>
+<!--*******************************************************************************************************-->
+
+<blockquote class="layui-elem-quote" id="currUsername"></blockquote>
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>职位推荐</legend>
+</fieldset>
+
+<div class="layui-bg-gray" style="padding: 30px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-panel">
+                <div id="recommendPanel" style="padding: 50px 30px;">一个面板</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>全部职位</legend>
+</fieldset>
+
+
+<div style="text-align:center;">
+    <div class="layui-inline">
+        <table class="layui-hide" id="mainTable" lay-filter="mainTable" style="margin: 0 auto;"></table>
+    </div>
+</div>
+
+<!--<table class="layui-hide" id="mainTable" lay-filter="mainTable"></table>-->
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="showDetail" style="font-size:15px">显示详情</a>
+</script>
+
+<script>
+
+    /**********************************************************************************************************************/
+    // 导航栏函数
+    var $ = layui.$;
+    var loginUsername;
+    var loginUserType;
+    var loginId;
+    //初始化
+    $(function () {
+        $.post("../user/getCurrUserType", function (obj) {
+            loginUserType = obj;
+            console.log("当前登录用户类型: " + loginUserType);
+        }, "text")
+        $.post("../user/getCurrLoginId", function (obj) {
+            loginId = obj;
+            console.log("当前登录用户Id: " + loginId);
+        }, "text")
+
+        $.post("../user/getCurrUsername", function (obj) {
+            loginUsername = obj;
+            console.log("当前登录用户名: " + loginUsername);
+            if ($.isEmptyObject(loginUsername)) {
+                $("#currUsername").html("<a style='color: red'>您还未登录，请先登录。</a>&nbsp;<a href='login.html' style='color: green;text-decoration: underline'>点击登录</a>");
+            } else {
+                if (loginUserType === "com") {
+                    $("#currUsername").html(loginUsername + "，欢迎登录本系统！当前用户身份：企业用户");
+                } else if (loginUserType === "em") {
+                    $("#currUsername").html(loginUsername + "，欢迎登录本系统！当前用户身份：普通用户");
+                } else if (loginUserType === "admin") {
+                    $("#currUsername").html(loginUsername + "，欢迎登录本系统！当前用户身份：管理员");
+                } else {
+                    window.location.href = '../main.html?loginId=' + loginId;
+                }
+            }
+        }, "text")
+
+
+        $.post("../user/recommend", function (obj) {
+            var comName = obj.res.comId;
+            var jobName = obj.res.jobId;
+            var comjobId = obj.res.comjobId;
+            $("#recommendPanel").html("<a style='font-size:12pt'>提示：当前</a><a style='color: red;font-size:12pt'>" +
+                comName + "</a><a style='font-size:12pt'>的</a><a style='color: red;font-size:12pt'>" +
+                jobName + "</a><a style='font-size:12pt'>职位紧缺，投递录用概率更大。</a>" +
+                "<a style='color: green;font-size:12pt;text-decoration: underline' href='../jobDetail.html?comjobId="+comjobId+"'>点击立即投递</a>")
+        }, "json")
+    });
+
+    // 编辑用户信息
+    function infoEdit() {
+        if ($.isEmptyObject(loginUsername)) {
+            layer.msg('您还未登录，请先登录！', {icon: 2, time: 2000, shift: 6});  //未登录无法跳转
+        } else {
+            window.location.href = '/user/toInfoEdit';  //已登录跳转到用户编辑界面
+        }
+    }
+
+    // 返回主页
+    function returnMain() {
+        window.location.href = './main.html?loginId=' + loginId;
+        console.log("returnMain当前登录用户Id: " + loginId);
+    }
+
+    // 登出
+    function logout() {
+        if ($.isEmptyObject(loginUsername)) {
+            layer.msg('您还未登录，请先登录！', {icon: 2, time: 2000, shift: 6});
+        } else {
+            layer.confirm('确定退出登录吗?', function () {
+                layer.msg('已退出登录!', {icon: 1, time: 1000, shift: 1}, function () {
+                    window.location.href = '../user/logout';
+                });
+            });
+        }
+    }
+
+
+    function toLogin() {
+        layer.open({
+            type: 2,
+            title: '登录',
+            scrollbar: false,
+            shadeClose: true,
+            shade: 0.8,
+            area: ['700px', '600px', '90%'],
+            shadeClose: false,
+            content: 'login.html' //iframe的url
+        });
+    }
+
+    /**********************************************************************************************************************/
+
+
+    var table = layui.table;
+    layui.use('table', function () {
+        table.render({
+            elem: '#mainTable'
+            , skin: 'nob'
+            , even: 'true'
+            , size: 'lg'
+            , height: '800'
+            , url: '/admin/queryComjobByLimit'
+            , method: 'post'
+            // , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , cols: [[
+                {field: '', width: 300, title: '', align: 'center', style: 'font-size:18px'}
+                , {field: 'jobId', width: 150, title: '职位名称', align: 'center', style: 'font-size:18px'}
+                , {field: 'comId', width: 150, title: '公司名称', align: 'center', style: 'font-size:18px'}
+                , {field: 'salary', width: 150, title: '薪资', align: 'center', style: 'font-size:18px'}
+                , {field: 'workTime', width: 150, title: '工作时间', align: 'center', style: 'font-size:18px'}
+                , {field: 'workAddress', width: 150, title: '工作地点', align: 'center', style: 'font-size:18px'}
+                , {width: 150, title: '操作', align: 'center', toolbar: '#barDemo'}
+                , {field: '', width: 300, title: '', align: 'center', style: 'font-size:18px'}
+                , {
+                    field: 'comjobId',
+                    width: 1,
+                    title: '',
+                    align: 'center',
+                    style: 'font-size:18px',
+                    style: 'display:none'
+                }
+            ]]
+            , page: true
+        });
+
+        //监听行工具事件
+        //tool是工具条事件名,allComTable是table原始容器的属性,lay-filter="对应的值"
+        table.on('tool(mainTable)', function (obj) {
+            console.log(obj);
+            var data = obj.data;
+            console.log(data);
+            if (obj.event === 'showDetail') {
+                console.log(data);
+                window.location.href = '../jobDetail.html?comjobId=' + data.comjobId;
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>网站首页</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../static/js/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<ul class="layui-nav">
+    <li class="layui-nav-item">
+        <a href="javascript:;" onclick="returnMain()">网站首页</a>
+    </li>
+    <li class="layui-nav-item">
+        <a href="javascript:;" onclick="">职位搜索</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="pwdEdit()">修改密码</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="logout()">退出登录</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="infoEdit()">个人信息管理</a>
+    </li>
+
+    <!--    <li class="layui-nav-item" lay-unselect=""  style="float:right">
+            <a href="javascript:;"><img src="//t.cn/RCzsdCq" class="layui-nav-img">我</a>
+            <dl class="layui-nav-child">
+                <dd><a href="javascript:;" onclick="comInfoEdit()">信息管理</a></dd>
+                <dd><a href="javascript:;">安全管理</a></dd>
+                <dd><a href="javascript:;">退了</a></dd>
+            </dl>
+        </li>-->
+
+
+</ul>
+
+
+<script src="../static/js/layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+<script>
+    var $ = layui.$;
+    var loginState;
+    var loginUserType;
+    $(function () {
+        $.post("../user/getCurrUserName", function (obj) {
+            loginState = obj;
+            console.log(loginState);
+        }, "text")
+        $.post("../user/getCurrUserType", function (obj) {
+            loginUserType = obj;
+            console.log(loginUserType);
+        }, "text")
+    });
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results == null ? "" : decodeURIComponent(results[1]);
+    }
+
+    function infoEdit() {
+        if ($.isEmptyObject(loginState)) {
+            layer.msg('您还未登录，请先登录。', {icon: 2, time: 2000, shift: 6});
+        } else {
+            if (loginUserType === "com") {
+                window.location.href = '../comInfoEdit.html?loginId=' + getParameterByName("loginId");
+            } else if(loginUserType === "em"){
+                window.location.href = '../emInfoEdit.html?loginId=' + getParameterByName("loginId");
+            }
+        }
+    }
+
+    function returnMain() {
+        window.location.href = '../main.html?loginId=' + getParameterByName("loginId");
+        // console.log(getParameterByName("comId"))
+    }
+
+    function logout() {
+        if ($.isEmptyObject(loginState)) {
+            layer.msg('您还未登录，请先登录。', {icon: 2, time: 2000, shift: 6});
+        } else {
+            layer.confirm('确定退出登录吗?', function () {
+                layer.msg('已退出登录!', {icon: 1, time: 2000, shift: 1}, function () {
+                    window.location.href = '../user/logout';
+                });
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

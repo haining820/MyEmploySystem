@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>系统管理员页面</title>
+    <link rel="stylesheet" href="../../static/js/layui/css/layui.css">
+</head>
+
+<body style="overflow-x:hidden;overflow-y:hidden;">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">招聘者信息管理</div>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item"><a href="../../comInfoEdit.html">个人信息管理</a></li>
+                <li class="layui-nav-item"><a href="../../comjobHandle.html">招聘职位管理</a></li>
+                <li class="layui-nav-item"><a href="../../emjobHandle.html">投递管理</a></li>
+                <li class="layui-nav-item"><a href="javascript:;" onclick="returnMain()">回到首页</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <!--        <div style="padding: 15px;">内容主体区域</div>-->
+        <!--用iframe将表单显示在页面中-->
+        <iframe src="" id="main" height="100%" width="100%"></iframe>
+
+    </div>
+
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © 20181001235-191184-于海宁
+    </div>
+</div>
+
+<script src="../../static/js/layui/layui.js"></script>
+<script>
+    //JavaScript代码区域,将表单元素显示到页面中
+    layui.use('element', function () {
+        var $ = layui.jquery;
+        $(document).ready(function () {
+            //查找dd下面的a标签
+            $("dd>a").click(function (e) {
+                e.preventDefault();
+                $('#main').attr("src", $(this).attr("href"));
+            });
+            $("li>a").click(function (e) {
+                e.preventDefault();
+                $('#main').attr("src", $(this).attr("href"));
+            });
+        });
+    });
+
+    var $ = layui.$;
+    var loginId;
+    //初始化
+    $(function () {
+        $.post("../user/getCurrLoginId", function (obj) {
+            loginId = obj;
+            console.log("当前登录用户Id: "+loginId);
+        }, "text")
+    });
+
+    // 返回主页
+    function returnMain() {
+        window.location.href = '../main.html?loginId=' + loginId;
+        console.log("returnMain当前登录用户Id: "+loginId);
+    }
+
+
+</script>
+</body>
+</html>

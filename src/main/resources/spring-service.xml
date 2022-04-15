@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--1.扫描service下的包-->
+    <context:component-scan base-package="com.haining820.service"/>
+
+    <!--2.将所有业务类注入到Spring,配置/注解:@Service+@Autowired-->
+    <bean id="adminServiceImpl" class="com.haining820.service.AdminServiceImpl">
+        <property name="adminMapper" ref="adminMapper"/>
+    </bean>
+    <bean name="emServiceImpl" class="com.haining820.service.EmServiceImpl">
+        <property name="emMapper" ref="emMapper"/>
+    </bean>
+    <bean name="comServiceImpl" class="com.haining820.service.ComServiceImpl">
+        <property name="comMapper" ref="comMapper"/>
+    </bean>
+    <bean name="loginServiceImpl" class="com.haining820.service.LoginServiceImpl">
+        <property name="loginMapper" ref="loginMapper"/>
+    </bean>
+    <bean name="jobtypeServiceImpl" class="com.haining820.service.JobtypeServiceImpl">
+        <property name="jobtypeMapper" ref="jobtypeMapper"/>
+    </bean>
+    <bean name="jobServiceImpl" class="com.haining820.service.JobServiceImpl">
+        <property name="jobMapper" ref="jobMapper"/>
+    </bean>
+    <bean name="comjobServiceImpl" class="com.haining820.service.ComjobServiceImpl">
+        <property name="comjobMapper" ref="comjobMapper"/>
+    </bean>
+    <bean name="emjobServiceImpl" class="com.haining820.service.EmjobServiceImpl">
+        <property name="emjobMapper" ref="emjobMapper"/>
+    </bean>
+
+
+    <!--文件上传配置-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 请求的编码格式，必须和jSP的pageEncoding属性一致，以便正确读取表单的内容，
+        默认为ISO-8859-1 -->
+        <property name="defaultEncoding" value="utf-8"/>
+        <!-- 上传文件大小上限，单位为字节（10485760=10M） -->
+        <property name="maxUploadSize" value="10485760"/>
+        <property name="maxInMemorySize" value="40960"/>
+    </bean>
+
+
+
+    <!--3.声明式事务配置-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--注入数据源-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--4.AOP事务支持-->
+
+
+</beans>

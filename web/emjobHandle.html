@@ -1,0 +1,144 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>企业用户列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <script src="./static/js/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+
+<body style="padding: 10px;">
+
+<!--引用区块,表格上方标的题-->
+<blockquote class="layui-elem-quote">企业用户列表</blockquote>
+
+<!--工具栏-->
+<script type="text/html" id="toolbarDemo">
+    <div class="searchTable">
+        <div class="layui-inline">
+            <input id="inputComName" name="inputComName" class="layui-input"
+                   placeholder="请输入应聘者名称" style="height: 32px;" autocomplete="off">
+        </div>
+        <button id="searchCom" type="button" class="layui-btn layui-btn-primary layui-border-green layui-btn-sm"
+                data-type="reload" style="height: 32px;">
+            <i class="layui-icon">&#xe615;</i> 搜 索
+        </button>
+    </div>
+</script>
+
+
+<!--用户列表-->
+<table class="layui-hide" id="emjobHandleTable" lay-filter="emjobHandleTable"></table>
+<!--用户列表后面的删除和编辑按钮-->
+<script type="text/html" id="barDemo">
+<!--    <a class="layui-btn layui-btn-xs" lay-event="show">显示详情</a>-->
+    <a class="layui-btn layui-btn-xs" lay-event="download">下载简历</a>
+    <a class="layui-btn layui-btn-xs" lay-event="handle">处理</a>
+</script>
+
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        var $ = layui.$;
+        table.render({
+            elem: '#emjobHandleTable'
+            , id: 'emjobHandleTable'
+            , height: 'full-80'
+            , url: '/user/queryEmjobByCom'
+            , method: 'post'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter']
+            , cols: [[
+                //编号、职位、姓名、是否接受、是否处理、投递时间
+                {field: 'emjobId', width: 120, title: '投递编号', sort: true}
+                , {field: 'comjobId', width: 120, title: '职位名称'}
+                , {field: 'emId', width: 120, title: '投递人'}
+                , {
+                    field: 'reply', width: 120, title: '是否处理', sort: true, templet: function (d) {
+                        // debugger;
+                        if (d.reply == "是") {
+                            return ' <span style="color: green;font-weight:bold;">' + d.reply + '</span>'
+                        } else if (d.reply == "否") {
+                            return ' <span style="color: red;font-weight:bold">' + d.reply + '</span>'
+                        }
+                    }
+                }
+                , {field: 'res', width: 120, title: '处理结果', sort: true}
+                , {field: 'emjobCreateTime', width: 200, title: '投递时间'}
+                , {width: 180, title: '操作', toolbar: '#barDemo'}
+            ]]
+            , page: true
+        });
+
+
+        table.on('tool(emjobHandleTable)', function (obj) {
+            var data = obj.data;
+            console.log(obj);
+            if (obj.event === 'handle') {
+                layer.confirm('请选择录用考核结果', {
+                    title: '提示',
+                    btn: ['通过', '拒绝'] //按钮
+                }, function () {
+                    $.ajax({
+                        url: "/user/handle/" + data.emjobId + "/" + 1,
+                        type: "POST",
+                        data: JSON.stringify(data.field),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                layer.close(layer.index);
+                                layer.msg('已通过！', {icon: 1, time: 1000, shift: 1}, function () {
+                                    location.reload();
+                                });
+                            } else if (data.status == -1) {
+                                layer.msg('已处理，请勿重复处理！', {icon: 2, time: 2000, shift: 6});  //未登录无法跳转
+                            } else {
+                                layer.msg('请重试！');
+                            }
+                        },
+                        error: function () {
+                            console.log("ajax error");
+                        }
+                    });
+                }, function () {
+                    $.ajax({
+                        url: "/user/handle/" + data.emjobId + "/" + 0,
+                        type: "POST",
+                        data: JSON.stringify(data.field),
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                layer.close(layer.index);
+                                layer.msg('已拒绝！', {icon: 1, time: 1000, shift: 1}, function () {
+                                    location.reload();
+                                });
+                            } else if (data.status == -1) {
+                                layer.msg('已处理，请勿重复处理！', {icon: 2, time: 2000, shift: 6});  //未登录无法跳转
+                            } else {
+                                layer.msg('请重试！');
+                            }
+                        },
+                        error: function () {
+                            console.log("ajax error");
+                        }
+                    });
+                });
+            }
+            if (obj.event === 'download') {
+                console.log("下载Id"+data.emId);
+                window.location.href = '/user/fileDownload/'+data.emjobId+'/'+1;
+            }
+
+        });
+
+    });
+</script>
+
+</body>
+</html>

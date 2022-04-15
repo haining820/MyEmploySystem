@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haining820.dao.EmMapper">
+
+    <select id="queryEmByLimit" resultType="Em" parameterType="java.util.Map">
+        select * from employsys.employee
+        <where>
+            <if test="emName!=null">
+                emName=#{emName}
+            </if>
+        </where>
+        <if test="startIndex!=null">
+            <if test="pageSize!=null">
+                limit #{startIndex},#{pageSize}
+            </if>
+        </if>
+    </select>
+
+    <select id="countEmNum" resultType="int" parameterType="java.util.Map">
+        select count(*) from employsys.employee
+        <if test="emName!=null">
+            where emName=#{emName}
+        </if>
+    </select>
+
+
+</mapper>

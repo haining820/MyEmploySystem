@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haining820.dao.ComjobMapper">
+    <select id="queryComjobByLimit" resultType="Comjob" parameterType="java.util.Map">
+        select * from employsys.comjob
+        <where>
+            <if test="comId!=null">
+                comId=#{comId}
+            </if>
+        </where>
+        <if test="startIndex!=null">
+            <if test="pageSize!=null">
+                limit #{startIndex},#{pageSize}
+            </if>
+        </if>
+    </select>
+</mapper>

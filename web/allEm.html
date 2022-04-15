@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>普通用户列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="./static/js/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+</head>
+
+<body style="padding: 10px;">
+
+<!--引用区块,表格上方标的题-->
+<blockquote class="layui-elem-quote">普通用户列表</blockquote>
+
+<!--工具栏-->
+<script type="text/html" id="toolbarDemo">
+    <div class="searchTable">
+        <div class="layui-inline">
+            <input id="inputEmName" name="inputEmName" class="layui-input"
+                   placeholder="请输入用户姓名" style="height: 32px;" autocomplete="off">
+        </div>
+
+        <button id="searchEm" type="button" class="layui-btn layui-btn-primary layui-border-green layui-btn-sm"
+                data-type="reload" style="height: 32px;">
+            <i class="layui-icon">&#xe615;</i> 搜 索
+        </button>
+        &nbsp;&nbsp;&nbsp;
+        <div class="layui-inline">
+            <button id="refresh" type="button" class="layui-btn layui-btn-sm" data-type="reload" style="height: 32px;">
+                <i class="layui-icon">&#xe669;</i> 显示全部用户
+            </button>
+            <button id="add-em-btn" class="layui-btn layui-btn-sm" style="height: 32px;">添加用户</button>
+        </div>
+    </div>
+</script>
+
+<!--添加用户弹出层-->
+<div id="add-em-layer" style="display: none; padding: 20px 50px">
+    <form id="add-em-form" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="emAccountNum" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="emPwd" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="emUsername" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emName" class="layui-input" lay-verify="required" autocomplete="off"
+                           style="width:280px;">
+                </div>
+            </div>
+            <div class="layui-inline" style="padding-left: 90px">
+                <label class="layui-form-label" style="">性别</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emSex" class="layui-input" lay-verify="required" autocomplete="off"
+                           style="width:260px;">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">生日</label>
+            <div class="layui-input-block">
+                <input type="text" name="emBirth" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">就读院校</label>
+            <div class="layui-input-block">
+                <input type="text" name="emSchool" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="width:780px">自我介绍</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" name="emIntro" class="layui-textarea"
+                          style="width:780px; height:120px"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电子邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="emEmail" class="layui-input" lay-verify="email" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="emTel" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">毕业时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="emGraduateTime" class="layui-input" lay-verify="date"
+                       placeholder="请按正确格式（年-月）输入，如：2021-9" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <br>
+                <button class="layui-btn" lay-submit lay-filter="add-em-form-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="add-exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--更新用户弹出层-->
+<div id="update-em-layer" style="display: none; padding: 20px 50px">
+    <form id="update-em-form" class="layui-form layui-form-pane" lay-filter="update-em-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="emId" class="layui-input" readonly>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="emAccountNum" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="emPwd" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="emUsername" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emName" class="layui-input" lay-verify="required" autocomplete="off"
+                           style="width:280px;">
+                </div>
+            </div>
+            <div class="layui-inline" style="padding-left: 90px">
+                <label class="layui-form-label" style="">性别</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="emSex" class="layui-input" lay-verify="required" autocomplete="off"
+                           style="width:260px;">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">生日</label>
+            <div class="layui-input-block">
+                <input type="text" name="emBirth" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">就读院校</label>
+            <div class="layui-input-block">
+                <input type="text" name="emSchool" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="width:780px">自我介绍</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" name="emIntro" class="layui-textarea"
+                          style="width:780px; height:120px"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电子邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="emEmail" class="layui-input" lay-verify="email" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="emTel" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">毕业时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="emGraduateTime" class="layui-input" lay-verify="date"
+                       placeholder="请按正确格式（年-月）输入，如：2021-9" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <br>
+                <button class="layui-btn" lay-submit lay-filter="update-em-form-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="update-exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--用户列表-->
+<table class="layui-hide" id="allEmTable" lay-filter="allEmTable"></table>
+
+<!--用户列表后面的删除和编辑按钮-->
+<script type="text/html" id="barEm">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        var $ = layui.$;
+        table.render({
+            elem: '#allEmTable'
+            , height: 'full-80'
+            , url: '/admin/queryEmByLimit'
+            , method: 'post'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter']
+            , cellMinWidth: 60 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            , cols: [[
+                {field: 'emId', width: 100, title: 'ID', sort: true}
+                , {field: 'emAccountNum', width: 100, title: '账号'}
+                , {field: 'emPwd', width: 100, title: '登录密码'}
+                , {field: 'emUsername', width: 120, title: '昵称'}
+                , {field: 'emName', width: 100, title: '姓名'}
+                , {field: 'emSex', width: 80, title: '性别'}
+                , {field: 'emBirth', width: 120, title: '生日'}
+                , {field: 'emSchool', width: 150, title: '就读院校'}
+                , {field: 'emIntro', width: 200, title: '自我介绍'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                , {field: 'emEmail', width: 150, title: '邮箱'}
+                , {field: 'emTel', width: 150, title: '联系电话'}
+                , {field: 'emGraduateTime', width: 120, title: '毕业时间'}
+                , {field: 'emFile', width: 160, title: '简历位置'}
+                , {field: 'emCreateTime', width: 160, title: '账户创建时间'}
+                , {fixed: 'right', width: 120, title: '操作', toolbar: '#barEm'}
+            ]]
+            , page: true
+        });
+
+        //搜索功能
+        active = {
+            reload: function () {
+                var inEmName = $('#inputEmName');
+                //执行重载
+                table.reload('allEmTable', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        emName: inEmName.val()
+                    }
+                });
+            }
+        };
+
+        $('body').on('click', '.searchTable .layui-btn', function () {
+            // $('.searchTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        //显示全部用户
+        $('body').on('click', '#refresh', function () {
+            table.reload('allEmTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    emName: ""
+                }
+            });
+        });
+
+        //显示添加用户弹出层
+        $('body').on('click', '#add-em-btn', function () {
+
+            // 每次显示前重置表单
+            $('#add-em-form')[0].reset();
+            layer.open({
+                type: 1,
+                title: '添加企业用户',
+                skin: 'layui-layer-molv',
+                area: ['900px', '600px'],
+                content: $('#add-em-layer')
+            });
+        });
+
+        //添加用户表单提交
+        layui.form.on('submit(add-em-form-submit)', function (data) {
+            // ajax方式添加用户
+            $.ajax({
+                url: "edit/addEm",
+                type: "POST",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        layer.close(layer.index);
+                        layer.msg('添加成功！', {icon: 1, time: 1000, shift: 1}, function () {
+                            table.reload('allEmTable');
+                        });
+                    } else {
+                        layer.msg('添加失败！');
+                    }
+                },
+                error: function () {
+                    console.log("ajax error");
+                }
+            });
+            // 阻止表单跳转
+            return false;
+        });
+
+
+        $('body').on('click', '#add-exit', function () {
+            layer.close(layer.index);
+        })
+
+        $('body').on('click', '#update-exit', function () {
+            layer.close(layer.index);
+        })
+
+        //监听行工具事件
+        table.on('tool(allEmTable)', function (obj) {
+            var data = obj.data;
+            console.log(obj);
+            //删除用户事件
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该用户吗?', function (index) {
+                    //向服务端发送删除指令
+                    console.log("data.emId=" + data.emId);
+                    $.ajax({
+                        url: "admin/deleteEmById/" + data.emId
+                        , type: 'DELETE'
+                        , contentType: "application/json; charset=utf-8"
+                        , dataType: 'json'
+                        , success: function (data) {
+                            if (data.status == 1) {
+                                layer.msg('删除成功');
+                                table.reload('allEmTable');
+                            } else {
+                                layer.msg('删除失败');
+                            }
+                        },
+                        error: function (data) {
+                            console.log("ajax error");
+                            layer.msg('ajax error');
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+
+            // 更新用户事件
+            if (obj.event === 'edit') {
+                // 每次显示更新用户的表单前自动为表单填写该行的数据
+                layui.form.val('update-em-form', {
+                    "emId": data.emId,
+                    "emAccountNum": data.emAccountNum,
+                    "emPwd": data.emPwd,
+                    "emUsername": data.emUsername,
+                    "emName": data.emName,
+                    "emSex": data.emSex,
+                    "emBirth": data.emBirth,
+                    "emSchool": data.emSchool,
+                    "emIntro": data.emIntro,
+                    "emEmail": data.emEmail,
+                    "emTel": data.emTel,
+                    "emFile": data.emFile,
+                    "emGraduateTime": data.emGraduateTime
+                });
+                // 显示更新用户表单的弹出层
+                layer.open({
+                    type: 1,
+                    title: '更新用户',
+                    skin: 'layui-layer-molv',
+                    area: ['900px', '600px'],
+                    content: $('#update-em-layer')
+                });
+                // 更新用户表单提交
+                layui.form.on('submit(update-em-form-submit)', function (data) {
+                    // ajax方式更新用户
+                    $.ajax({
+                        url: "edit/updateEm",
+                        type: "PUT",
+                        data: JSON.stringify(data.field),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                layer.close(layer.index);
+                                layer.msg('更新成功!', {icon: 1, time: 1000, shift: 1}, function () {
+                                    table.reload('allEmTable');
+                                });
+
+                            } else {
+                                layer.msg('更新失败');
+                            }
+                        },
+                        error: function () {
+                            console.log("ajax error");
+                        }
+                    });
+                    // 阻止表单跳转
+                    return false;
+                });
+            }
+
+        });
+
+    });
+</script>
+
+
+</body>
+</html>

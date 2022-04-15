@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>企业用户信息编辑</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+
+<!--*******************************************************************************************************-->
+<ul class="layui-nav">
+    <li class="layui-nav-item">
+        <a href="javascript:;" onclick="returnMain()">网站首页</a>
+    </li>
+    <li class="layui-nav-item">
+        <a href="javascript:;" onclick="">职位搜索</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="pwdEdit()">修改密码</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="logout()">退出登录</a>
+    </li>
+    <li class="layui-nav-item" style="float:right">
+        <a href="javascript:;" onclick="infoEdit()">个人信息管理</a>
+    </li>
+</ul>
+<!--*******************************************************************************************************-->
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>职位详情</legend>
+</fieldset>
+
+<div class="layui-bg-gray" style="padding: 50px;">
+    <div class="layui-row layui-col-space6">
+        <div class="layui-col-md5">
+            <div class="layui-panel">
+                <div id="jobDetail" style="padding: 50px 30px;">一个面板</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--将用户信息显示在表单中-->
+<form class="layui-form layui-form-pane" style="padding:10px" lay-filter="showComjobDetail">
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label" style="width:100%">职位简介</label>
+        <div class="layui-input-block" contenteditable="true">
+            <textarea name="comjobIntro" class="layui-textarea"
+                      style="width:100%;height:520px;border:none;" readonly></textarea>
+        </div>
+    </div>
+
+    <div style="padding:10px 30px;">
+        <button id="choose" type="button" class="layui-btn layui-btn-normal">投递</button>
+    </div>
+
+</form>
+
+
+<script src="./static/js/layui/layui.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
+<script>
+
+    // 获得URL的后缀
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results == null ? "" : decodeURIComponent(results[1]);
+    }
+
+    var comjobId = getParameterByName("comjobId");
+    /**********************************************************************************************************************/
+    // 导航栏函数,页面公用部分
+    var $ = layui.$;
+    var loginUserName;
+    var loginUserType;
+    var loginId;
+    var status;
+
+    // 初始化
+    $(function () {
+        $.post("./user/getCurrUserType", function (obj) {
+            loginUserType = obj;
+            console.log(loginUserType);
+        }, "text")
+        $.post("./user/getCurrUsername", function (obj) {
+            loginUserName = obj;
+            console.log(loginUserName);
+        }, "text")
+        $.post("./user/getCurrLoginId", function (obj) {
+            loginId = obj;
+            console.log(loginId);
+            $.post("./user/getCurrStatus/" + comjobId + "/" + loginId, function (obj) {
+                status = obj;
+                console.log("初始化status:" + status);
+                if (status == -1) {
+                    $("#choose").text('已投递');
+                    // layer.msg('投递成功！', {icon: 1, time: 2000, shift: 3});
+                }
+            }, "text")
+        }, "text")
+    });
+
+    // 编辑用户信息
+    function infoEdit() {
+        if ($.isEmptyObject(loginUserName)) {
+            layer.msg('您还未登录，请先登录！', {icon: 2, time: 2000, shift: 6});  //未登录无法跳转
+        } else {
+            window.location.href = '/user/toInfoEdit';  //已登录跳转到用户编辑界面
+        }
+    }
+
+    // 返回主页
+    function returnMain() {
+        window.location.href = './main.html?loginId=' + loginId;
+    }
+
+    // 登出
+    function logout() {
+        if ($.isEmptyObject(loginUserName)) {
+            layer.msg('您还未登录，请先登录。', {icon: 2, time: 2000, shift: 6});
+        } else {
+            layer.confirm('确定退出登录吗?', function () {
+                layer.msg('已退出登录!', {icon: 1, time: 1000, shift: 1}, function () {
+                    window.location.href = '/user/logout';
+                });
+            });
+        }
+    }
+
+    /**********************************************************************************************************************/
+
+
+    layui.use('form', function () {
+        var form = layui.form;
+        var $ = layui.$;
+        $.ajax({
+            type: "POST",
+            url: '/user/showComjobDetail/' + comjobId,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            success: function (obj) {
+                var data = obj.data;
+                $("#jobDetail").html("<a style='font-size:12pt'>公司名称：</a>" +
+                    "<a style='font-size:12pt'>" + data.comId + "</a>" + "<br>" +
+                    "<a style='font-size:12pt'>职位名称：</a>" +
+                    "<a style='font-size:12pt'>" + data.jobId + "</a>" + "<br>" +
+                    "<a style='font-size:12pt'>薪酬：</a>" +
+                    "<a style='font-size:12pt'>" + data.salary + "</a>" + "<br>" +
+                    "<a style='font-size:12pt'>工作时间：</a>" +
+                    "<a style='font-size:12pt'>" + data.workTime + "</a>" + "<br>" +
+                    "<a style='font-size:12pt'>工作地点：</a>" +
+                    "<a style='font-size:12pt'>" + data.workAddress + "</a>" + "<br>")
+                form.val("showComjobDetail", { //formTest 即 class="layui-form" 所在元素属性 lay-filter="" 对应的值
+                    "comjobIntro": data.comjobIntro
+                });
+            }
+        })
+    });
+
+    // 投递操作
+    $('body').on('click', '#choose', function () {
+        if (loginUserType === "com") {
+            layer.msg('企业用户无法投递！', {icon: 2, time: 2000, shift: 6});
+        } else if (loginUserType === "em") {
+            $.ajax({
+                type: "POST",
+                url: '/user/delivery/' + comjobId + '/' + loginId,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (obj) {
+                    console.log("当前的status: " + obj.status);
+                    if (obj.status == -1) {
+                        layer.msg('已投递，请勿重复投递！', {icon: 2, time: 2000, shift: 6});
+                    } else if (obj.status == 1) {
+                        layer.msg('投递成功！', {icon: 1, time: 2000, shift: 3});
+                        $("#choose").text('已投递');
+                    }
+                }
+            })
+        } else if (loginUserType === "admin") {
+            layer.msg('管理员无法投递！', {icon: 2, time: 2000, shift: 6});
+        } else {
+            layer.msg('您还未登录！', {icon: 2, time: 2000, shift: 6});
+        }
+    });
+</script>
+
+</body>
+</html>

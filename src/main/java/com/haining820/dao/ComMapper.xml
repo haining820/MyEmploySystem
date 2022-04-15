@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haining820.dao.ComMapper">
+    <select id="queryComByLimit" resultType="Com" parameterType="java.util.Map">
+        select * from employsys.company
+        <where>
+            <if test="comName!=null">
+                comName=#{comName}
+            </if>
+        </where>
+        <if test="startIndex!=null">
+            <if test="pageSize!=null">
+                limit #{startIndex},#{pageSize}
+            </if>
+        </if>
+    </select>
+
+    <select id="countComNum" resultType="int" parameterType="java.util.Map">
+        select count(*) as comSum from employsys.company
+        <if test="comName!=null">
+            where comName=#{comName}
+        </if>
+    </select>
+</mapper>

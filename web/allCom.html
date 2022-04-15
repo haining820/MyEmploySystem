@@ -1,0 +1,429 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>企业用户列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/js/layui/css/layui.css" media="all">
+    <script src="./static/js/layui/layui.js" charset="utf-8"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+
+<body style="padding: 10px;">
+
+<!--引用区块,表格上方标的题-->
+<blockquote class="layui-elem-quote">企业用户列表</blockquote>
+
+<!--工具栏-->
+<script type="text/html" id="toolbarDemo">
+    <div class="searchTable">
+        <div class="layui-inline">
+            <input id="inputComName" name="inputComName" class="layui-input"
+                   placeholder="请输入公司名称" style="height: 32px;" autocomplete="off">
+        </div>
+
+        <button id="searchCom" type="button" class="layui-btn layui-btn-primary layui-border-green layui-btn-sm"
+                data-type="reload" style="height: 32px;">
+            <i class="layui-icon">&#xe615;</i> 搜 索
+        </button>
+
+        &nbsp;&nbsp;&nbsp;
+        <div class="layui-inline">
+            <button id="refresh" type="button" class="layui-btn layui-btn-sm" data-type="reload" style="height: 32px;">
+                <i class="layui-icon">&#xe669;</i> 显示全部用户
+            </button>
+            <button id="add-com-btn" class="layui-btn layui-btn-sm" style="height: 32px;">添加用户</button>
+        </div>
+
+    </div>
+
+</script>
+
+<!--添加用户弹出层-->
+<div id="add-com-layer" style="display: none; padding: 20px 50px">
+    <form id="add-com-form" class="layui-form layui-form-pane">
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="comAccountNum" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="comPwd" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="comUserName" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属公司</label>
+            <div class="layui-input-block">
+                <input type="text" name="comName" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="width:780px">公司介绍</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" name="comIntro" class="layui-textarea"
+                          style="width:780px; height:120px"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="comAddress" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电子邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="comEmail" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="comTel" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">官方网站</label>
+            <div class="layui-input-block">
+                <input type="text" name="comWeb" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <br>
+                <button class="layui-btn" lay-submit lay-filter="add-com-form-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="add-exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--更新用户弹出层-->
+<div id="update-com-layer" style="display: none; padding: 20px 50px">
+    <form id="update-com-form" class="layui-form layui-form-pane" lay-filter="update-com-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">comId</label>
+            <div class="layui-input-block">
+                <input type="text" name="comId" class="layui-input" readonly>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="comAccountNum" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="comPwd" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="comUserName" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属公司</label>
+            <div class="layui-input-block">
+                <input type="text" name="comName" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="width:780px">公司介绍</label>
+            <div class="layui-input-block">
+                <textarea placeholder="请输入内容" name="comIntro" class="layui-textarea"
+                          style="width:780px; height:120px"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="comAddress" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电子邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="comEmail" class="layui-input" lay-verify="email" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="comTel" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">公司网址</label>
+            <div class="layui-input-block">
+                <input type="text" name="comWeb" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <br>
+                <button class="layui-btn" lay-submit lay-filter="update-com-form-submit">提交</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="layui-btn" type="button" id="exit">取消</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--用户列表-->
+<table class="layui-hide" id="allComTable" lay-filter="allComTable"></table>
+<!--用户列表后面的删除和编辑按钮-->
+<script type="text/html" id="barCom">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        var $ = layui.$;
+        table.render({
+            elem: '#allComTable'
+            , id: 'allComTable'
+            , height: 'full-80'
+            , url: '/admin/queryComByLimit'
+            , method: 'post'
+            , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            , defaultToolbar: ['filter']
+            , cols: [[
+                {field: 'comId', width: 80, title: 'ID', sort: true}
+                , {field: 'comAccountNum', width: 100, title: '账号'}
+                , {field: 'comPwd', width: 100, title: '登录密码'}
+                , {field: 'comUserName', width: 100, title: '用户名'}
+                , {field: 'comName', width: 120, title: '所属公司'}
+                , {field: 'comIntro', width: 150, title: '公司介绍'}
+                , {field: 'comAddress', width: 150, title: '公司地址'}
+                , {field: 'comEmail', width: 100, title: '邮箱'}
+                , {field: 'comTel', width: 150, title: '联系电话'}
+                , {field: 'comWeb', width: 200, title: '官方网站'}
+                , {field: 'comCreateTime', width: 170, title: '账户创建时间'}
+                , {fixed: 'right', width: 120, title: '操作', toolbar: '#barCom'}
+            ]]
+            , page: true
+        });
+
+        /*$('#searchCom').on('click', function() {
+            var inComName = $('#inputComName');
+            //执行重载
+            table.reload('allComTable', {
+                where : {
+                    comName : inComName.val()
+                }
+            });
+            //搜索后清空输入框内容
+            document.getElementById("inputComName").value = "";
+        });*/
+
+        //刷新表格
+        // $("#refresh").on('click',function(){
+        //     //刷新整个页面
+        //     window.parent.location.reload();
+        // });
+
+        //搜索功能
+        active = {
+            reload: function () {
+                var inComName = $('#inputComName');
+                //执行重载
+                table.reload('allComTable', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        comName: inComName.val()
+                    }
+                });
+            }
+        };
+
+        $('body').on('click', '.searchTable .layui-btn', function () {
+            // $('.searchTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        //显示全部用户
+        $('body').on('click', '#refresh', function () {
+            table.reload('allComTable', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    comName: ""
+                }
+            });
+        });
+
+        //显示添加用户弹出层
+        $('body').on('click', '#add-com-btn', function () {
+            // $('#add-com-btn').click(function() {
+            // 每次显示前重置表单
+            $('#add-com-form')[0].reset();
+            layer.open({
+                type: 1,
+                title: '添加企业用户',
+                skin: 'layui-layer-molv',
+                area: ['900px', '600px'],
+                content: $('#add-com-layer')
+            });
+        });
+
+        //添加用户表单提交
+        layui.form.on('submit(add-com-form-submit)', function (data) {
+            // ajax方式添加用户
+            $.ajax({
+                url: "edit/addCom",
+                type: "POST",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 1) {
+                        layer.close(layer.index);
+                        layer.msg('添加成功！', {icon: 1, time: 1000, shift: 1}, function () {
+                            table.reload('allComTable');
+                        });
+                    } else {
+                        layer.msg('添加失败！');
+                    }
+                },
+                error: function () {
+                    console.log("ajax error");
+                }
+            });
+            // 阻止表单跳转
+            return false;
+        });
+
+        $('body').on('click', '#exit', function () {
+            layer.close(layer.index);
+        })
+
+        $('body').on('click', '#add-exit', function () {
+            layer.close(layer.index);
+        })
+
+        //监听行工具事件
+        //tool是工具条事件名,allComTable是table原始容器的属性,lay-filter="对应的值"
+        table.on('tool(allComTable)', function (obj) {
+            var data = obj.data;
+            console.log(obj);
+            //删除用户事件
+            if (obj.event === 'del') {
+                layer.confirm('确定删除该用户吗?', function (index) {
+                    //向服务端发送删除指令
+                    console.log("data.comId=" + data.comId);
+                    $.ajax({
+                        url: "/admin/deleteComById/" + data.comId
+                        // , data: {"comId":data.comId}  //data:用键值对的形式储存
+                        , type: 'DELETE'
+                        , contentType: "application/json; charset=utf-8"
+                        , dataType: 'json'
+                        , success: function (data) {
+                            if (data.status == 1) {
+                                layer.msg('删除成功');
+                                table.reload('allComTable');
+                            } else {
+                                layer.msg('删除失败');
+                            }
+                        },
+                        error: function (data) {
+                            console.log("ajax error");
+                            layer.msg('ajax error');
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+
+            // 更新用户事件
+            if (obj.event === 'edit') {
+                // 每次显示更新用户的表单前自动为表单填写该行的数据
+                layui.form.val('update-com-form', {
+                    "comId": data.comId,
+                    "comAccountNum": data.comAccountNum,
+                    "comPwd": data.comPwd,
+                    "comUserName": data.comUserName,
+                    "comName": data.comName,
+                    "comIntro": data.comIntro,
+                    "comAddress": data.comAddress,
+                    "comEmail": data.comEmail,
+                    "comTel": data.comTel,
+                    "comWeb": data.comWeb
+                });
+                // 显示更新用户表单的弹出层
+                layer.open({
+                    type: 1,
+                    title: '更新用户',
+                    skin: 'layui-layer-molv',
+                    area: ['900px', '600px'],
+                    content: $('#update-com-layer')
+                });
+                // 更新用户表单提交
+                layui.form.on('submit(update-com-form-submit)', function (data) {
+                    // ajax方式更新用户
+                    $.ajax({
+                        url: "edit/updateCom",
+                        type: "PUT",
+                        data: JSON.stringify(data.field),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == 1) {
+                                layer.close(layer.index);
+                                layer.msg('更新成功！', {icon: 1, time: 1000, shift: 1}, function () {
+                                    table.reload('allComTable');
+                                });
+                                // layer.close(layer.index);
+                                // layer.msg('更新成功');
+                                // table.reload('allComTable');
+                            } else {
+                                layer.msg('更新失败！');
+                            }
+                        },
+                        error: function () {
+                            console.log("ajax error");
+                        }
+                    });
+                    // 阻止表单跳转
+                    return false;
+                });
+            }
+
+        });
+
+    });
+</script>
+
+</body>
+</html>
